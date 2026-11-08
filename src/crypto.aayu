@@ -1,0 +1,124 @@
+# ==============================================================================
+# AAYU Standard Library: Enterprise Audited Cryptography (std/crypto.aayu)
+# Hardware-Accelerated FIPS 180-4 SHA-256, SHA-512, RFC 2104 HMAC,
+# NIST SP 800-38D AES-256-GCM Authenticated Encryption, CSPRNG & Merkle Trees.
+# Backed by audited BoringSSL / ring hardware cryptography.
+# 100% Pure AAYU Interface - Zero Python, Zero Unaudited Algorithms
+# ==============================================================================
+
+# Hardware-accelerated SHA-256 (FIPS 180-4 standard, 64-char lowercase hex)
+action sha256(data)
+    return crypto_sha256(data)
+end
+
+# Hardware-accelerated SHA-512 (128-char lowercase hex)
+action sha512(data)
+    return crypto_sha512(data)
+end
+
+# RFC 2104 HMAC-SHA256 Authenticated Message Authentication Code
+action hmac_sha256(key, data)
+    return crypto_hmac_sha256(key, data)
+end
+
+# Constant-time string equality check to eliminate side-channel timing attacks
+action timing_safe_equals(a, b)
+    return crypto_timing_safe_eq(a, b)
+end
+
+action secure_compare(a, b)
+    return crypto_timing_safe_eq(a, b)
+end
+
+# Cryptographically Secure Pseudorandom Number Generator (CSPRNG)
+action random_hex(count)
+    return crypto_random_hex(count)
+end
+
+action random_token(bytes_count)
+    return crypto_random_hex(bytes_count)
+end
+
+# NIST SP 800-38D AES-256-GCM Authenticated Encryption
+# Encrypts plaintext and appends 16-byte authentication tag
+action aes_gcm_encrypt(key, nonce, plaintext)
+    return crypto_aes_gcm_encrypt(key, nonce, plaintext)
+end
+
+# NIST SP 800-38D AES-256-GCM Authenticated Decryption
+# Verifies authentication tag; returns plaintext or null if tampered
+action aes_gcm_decrypt(key, nonce, ciphertext_hex)
+    return crypto_aes_gcm_decrypt(key, nonce, ciphertext_hex)
+end
+
+# Backward compatibility alias: hash_string now uses FIPS SHA-256
+action hash_string(data)
+    return crypto_sha256(data)
+end
+
+action hash_str(data)
+    return crypto_sha256(data)
+end
+
+# Merkle Tree child combiner using audited SHA-256
+action hash_combine(left_hash, right_hash)
+    let combined = left_hash + ":" + right_hash
+    return crypto_sha256(combined)
+end
+
+# Pure AAYU Binary Merkle Tree Root Computation
+action compute_merkle_root(tx_hashes)
+    let count = len(tx_hashes)
+    if count == 0
+        return crypto_sha256("EMPTY_MEMPOOL")
+    end
+    if count == 1
+        return tx_hashes[0]
+    end
+
+    let current_level = tx_hashes
+    let level_len = count
+
+    while level_len > 1
+        let next_level = []
+        let j = 0
+        while j < level_len
+            let left = current_level[j]
+            let right = left
+            if (j + 1) < level_len
+                right = current_level[j + 1]
+            end
+            let parent = hash_combine(left, right)
+            next_level = next_level + [parent]
+            j = j + 2
+        end
+        current_level = next_level
+        level_len = len(current_level)
+    end
+
+    return current_level[0]
+end
+
+# Proof-of-work difficulty verifier (counts leading zeros)
+action verify_pow_difficulty(hash_val, leading_zeros)
+    let prefix = ""
+    let z = 0
+    while z < leading_zeros
+        prefix = prefix + "0"
+        z = z + 1
+    end
+    let l_pref = len(prefix)
+    if len(hash_val) < l_pref
+        return 0
+    end
+    let sub = ""
+    let s = 0
+    while s < l_pref
+        sub = sub + hash_val[s]
+        s = s + 1
+    end
+    if sub == prefix
+        return 1
+    end
+    return 0
+end

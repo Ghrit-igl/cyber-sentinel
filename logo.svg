@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240" width="100%" height="240">
+  <defs>
+    <linearGradient id="bg_cs" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#240306"/>
+      <stop offset="100%" stop-color="#080102"/>
+    </linearGradient>
+    <linearGradient id="red-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#f87171"/>
+    </linearGradient>
+    <filter id="glow_cs">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="800" height="240" rx="16" fill="url(#bg_cs)" stroke="#7f1d1d" stroke-width="2"/>
+  <g transform="translate(40, 40)">
+    <rect x="0" y="0" width="160" height="160" rx="20" fill="#38080c" stroke="url(#red-glow)" stroke-width="3" filter="url(#glow_cs)"/>
+    <path d="M80 30 L125 50 L125 105 C125 135 80 155 80 155 C80 155 35 135 35 105 L35 50 Z" fill="none" stroke="#ef4444" stroke-width="4" filter="url(#glow_cs)"/>
+    <path d="M60 85 L75 100 L105 65" fill="none" stroke="#fca5a5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="240" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" fill="#ffffff" letter-spacing="1.5">
+    CYBER<tspan fill="#f87171">-SENTINEL</tspan>
+  </text>
+  <text x="240" y="135" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="500" fill="#fecaca">
+    Microsecond Autonomous SIEM, ReDoS-Immune Threat Neutralizer &amp; Packet Inspector
+  </text>
+  <text x="240" y="170" font-family="'Courier New', monospace" font-size="13" font-weight="700" fill="#ef4444">
+    [Shannon Entropy C2 Detection] · [Linear ReDoS Immunity] · [Buffer Overflow Canary]
+  </text>
+</svg>
